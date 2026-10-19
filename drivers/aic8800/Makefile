@@ -59,6 +59,17 @@ ARCH ?= $(SUBARCH)
 CROSS_COMPILE ?=
 endif
 
+# Ubuntu keeps the ABI revision in the release string (6.8.0-147-generic),
+# not in SUBLEVEL, so LINUX_VERSION_CODE cannot distinguish 6.8.0-146 from
+# 6.8.0-147. Detect the ABI from KVER and force the new
+# set_monitor_channel prototype when the backport is present.
+AICWF_KVER_ABI := $(shell echo "$(KVER)" | sed -n 's/^6\.8\.0-\([0-9]\+\).*/\1/p')
+ifneq ($(AICWF_KVER_ABI),)
+ifneq ($(shell [ $(AICWF_KVER_ABI) -ge 147 ] && echo 1),)
+subdir-ccflags-y += -DAICWF_FORCE_SET_MONITOR_CHANNEL_HAS_DEV
+endif
+endif
+
 ###########################################
 
 KERNEL_AUTOCONF := $(KDIR)/include/config/auto.conf
