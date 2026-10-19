@@ -54,6 +54,19 @@
 #error "Minimum kernel version supported is 3.10"
 #endif
 
+/*
+ * Ubuntu keeps the ABI revision in the release string (e.g.
+ * 6.8.0-147-generic) rather than in SUBLEVEL, so LINUX_VERSION_CODE
+ * cannot distinguish 6.8.0-146 from 6.8.0-147. The driver Makefile
+ * detects that case from KVER and defines
+ * AICWF_FORCE_SET_MONITOR_CHANNEL_HAS_DEV, which we honor here.
+ */
+#ifdef AICWF_FORCE_SET_MONITOR_CHANNEL_HAS_DEV
+#ifndef AICWF_CFG80211_SET_MONITOR_CHANNEL_HAS_DEV
+#define AICWF_CFG80211_SET_MONITOR_CHANNEL_HAS_DEV
+#endif
+#endif
+
 /* Generic */
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0)
 #define __bf_shf(x) (__builtin_ffsll(x) - 1)
